@@ -43,12 +43,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // if (Input.GetKeyDown(KeyCode.R))
-        // {
-        //     Loader.Load(Loader.Scene.Game);
-        // }
-        
-        // Lógica de Pause con tecla Escape
+                // Lógica de Pause con tecla Escape
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)

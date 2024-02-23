@@ -13,7 +13,10 @@ public static class Loader
     {
         Game,
         LoadingScene,
-        MainMenu
+        MainMenu,
+        Game2,
+        Game3,
+        Game4
     }
 
     private static Scene sceneAux;
@@ -39,13 +42,5 @@ public static class Loader
             loaderCallbackAction = null;
         }
     }
-
-    
-    // () => { cuerpo función }
-    /*
-     * private void NombreAux(){
-     * cuerpo función
-     * }
-     */
     
 }

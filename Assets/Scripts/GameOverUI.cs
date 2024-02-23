@@ -2,33 +2,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
-
-
-
-public abstract class Vehicle
-{
-    public string name;
-}
-
-public class Car : Vehicle
-{
-    public string model;
-}
-
-public class Bike : Vehicle
-{
-    public int power;
-}
-
-
 public class GameOverUI : MonoBehaviour
 {
     // Singleton
     public static GameOverUI Instance { get; private set; }
     
     [SerializeField] private Button restartButton;
-    
+    [SerializeField] private Button mainMenuButton;
+
     [SerializeField] private TextMeshProUGUI messsageText;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI highScoreText;
@@ -36,11 +17,6 @@ public class GameOverUI : MonoBehaviour
     private void Awake()
     {
 
-
-        Vehicle v = new Car();
-
-        
-        
         if (Instance != null)
         {
             Debug.LogError("More than one Instance");
@@ -49,6 +25,8 @@ public class GameOverUI : MonoBehaviour
         Instance = this;
         
         restartButton.onClick.AddListener(() => {Loader.Load(Loader.Scene.Game);});
+        //al darle al boton entramos en main menu
+        restartButton.onClick.AddListener(() => { Loader.Load(Loader.Scene.MainMenu); });
 
         Hide();
     }
@@ -70,13 +48,5 @@ public class GameOverUI : MonoBehaviour
         highScoreText.text = Score.GetHighScore().ToString();
         messsageText.text = hasNewHighScore ? "CONGRATULATIONS!" : "DON'T WORRY, NEXT TIME";
 
-        // if (hasNewHighScore)
-        // {
-        //     messsageText.text = "CONGRATULATIONS";
-        // }
-        // else
-        // {
-        //     messsageText.text = "DON'T WORRY, NEXT TIME";
-        // }
-    }
+         }
 }

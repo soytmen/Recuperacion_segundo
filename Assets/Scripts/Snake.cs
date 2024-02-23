@@ -1,8 +1,13 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class Snake : MonoBehaviour
 {
+  
+    private bool hasInput = false;
     public enum Direction
     {
         Left,
@@ -21,10 +26,10 @@ public class Snake : MonoBehaviour
     {
         private SnakeMovePosition snakeMovePosition; // Posición 2D de la SnakeBodyPart
         private Transform transform;
-
+        private GameObject snakeBodyPartGameObject;
         public SnakeBodyPart(int bodyIndex)
         {
-            GameObject snakeBodyPartGameObject = new GameObject("Snake Body",
+            snakeBodyPartGameObject = new GameObject("Snake Body",
                 typeof(SpriteRenderer));
             SpriteRenderer snakeBodyPartSpriteRenderer = snakeBodyPartGameObject.GetComponent<SpriteRenderer>();
             snakeBodyPartSpriteRenderer.sprite = 
@@ -106,6 +111,10 @@ public class Snake : MonoBehaviour
 
             transform.eulerAngles = new Vector3(0, 0, angle);
         }
+
+        public GameObject GetBodyPartGameObject() {
+            return snakeBodyPartGameObject;
+        }
     }
     
     # region VARIABLES
@@ -141,6 +150,23 @@ public class Snake : MonoBehaviour
         snakeBodyPartsList = new List<SnakeBodyPart>();
 
         state = State.Alive;
+    }
+
+    private void Start()
+    {
+        // Comprobamos si estamos en la escena donde queremos incrementar la velocidad
+        if (SceneManager.GetActiveScene().name == "Game3")
+        {
+            InvokeRepeating("IncreaseSpeed", 5f, 5f); 
+        }
+    }
+    void IncreaseSpeed()
+    {
+        if(gridMoveTimerMax > 0)
+        {
+            gridMoveTimerMax -= 0.02f;
+            Debug.Log("variando velocidad");
+        }
     }
 
     private void Update()
@@ -198,7 +224,12 @@ public class Snake : MonoBehaviour
                     gridMoveDirectionVector = new Vector2Int(0, 1);
                     break;
             }
-            
+            if (SceneManager.GetActiveScene().name == "Game4")
+            {
+                gridMoveDirectionVector *= -1;
+            }
+
+
             gridPosition += gridMoveDirectionVector; // Mueve la posición 2D de la cabeza de la serpiente
             gridPosition = levelGrid.ValidateGridPosition(gridPosition);
             
@@ -207,8 +238,25 @@ public class Snake : MonoBehaviour
             if (snakeAteFood)
             {
                 // El cuerpo crece
+
                 snakeBodySize++;
                 CreateBodyPart();
+
+                //hacemos un if que solo se caga si la escena se llama game 2 asi con cada escena para que se efectuen en cada uno 
+                //las diferentes funciones
+
+                if(SceneManager.GetActiveScene().name == "Game2")
+                {
+                    //creao un float que elije un numero aleatorio del 0-1 y si esta entre 0 y 0.20 se ejecuta el bonus
+                    float probabilidad = Random.value;
+
+                    if ( probabilidad <= 0.20f)
+                    {
+                        //llamamos a la funcion invisible
+                        Invisible();
+
+                    }
+                }
             }
             
             if (snakeMovePositionsList.Count > snakeBodySize)
@@ -231,14 +279,41 @@ public class Snake : MonoBehaviour
             transform.position = new Vector3(gridPosition.x, gridPosition.y, 0);
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirectionVector));
             UpdateBodyParts();
+            hasInput = false;
         }
     }
+    void Invisible()
+    {
+        //revisamos todas las partes del cuerpo y las ponemos invisibles
+        for (int i = 0; i < snakeBodyPartsList.Count; i++)
+        {
+            snakeBodyPartsList[i].GetBodyPartGameObject().GetComponent<Renderer>().enabled = false;
+        }
+        //cogemos en compnente renderer y lo ocultamos para hacerla invisible
+        GetComponent<Renderer>().enabled = false;
 
+        // a los 5 seundos la hacemos llamamos a la funcion visible
+        Invoke("Visible", 5f);
+    }
+
+    void Visible()
+    {
+        //recorremos todas las partes del cuerpo de nuevo para actavar el drenderer  de nuevo
+        for (int i = 0; i < snakeBodyPartsList.Count; i++)
+        {
+            snakeBodyPartsList[i].GetBodyPartGameObject().GetComponent<Renderer>().enabled = true;
+        }
+        GetComponent<Renderer>().enabled = true;
+
+    }
     private void HandleMoveDirection()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         
+        if(!hasInput)
+        { 
+
         // Cambio dirección hacia arriba
         if (verticalInput > 0) // Si he pulsado hacia arriba (W o Flecha Arriba)
         {
@@ -276,6 +351,8 @@ public class Snake : MonoBehaviour
             {
                 gridMoveDirection = Direction.Left;
             }
+        }
+            hasInput = true;
         }
     }
 
@@ -317,4 +394,5 @@ public class Snake : MonoBehaviour
             snakeBodyPartsList[i].SetMovePosition(snakeMovePositionsList[i]);
         }
     }
+ 
 }

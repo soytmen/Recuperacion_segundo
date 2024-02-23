@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelGrid
 {
@@ -39,13 +40,7 @@ public class LevelGrid
 
     private void SpawnFood()
     {
-        // while (condicion){
-        // cosas
-        // }
-        
-        // { cosas }
-        // while (condicion)
-        
+              
         do
         {
             foodGridPosition = new Vector2Int(
@@ -63,23 +58,49 @@ public class LevelGrid
     {
         int w = Half(width);
         int h = Half(height);
-        
-        // Me salgo por la derecha
-        if (gridPosition.x > w)
+        //multiplicamos por -1 la direccion y y x cada una en su caso correspondiente por -1 para que no solo se guie por arriba 
+        // y abajo del escenario sino tambia la posicion del gameobject.
+        if (SceneManager.GetActiveScene().name == "Game4")
         {
-            gridPosition.x = -w;
+            if (gridPosition.x > w)
+            {
+                gridPosition.x = -w;
+                gridPosition.y *= -1;
+            }
+            if (gridPosition.x < -w)
+            {
+                gridPosition.x = w;
+                gridPosition.y *= -1;
+            }
+            if (gridPosition.y > h)
+            {
+                gridPosition.y = -h;
+                gridPosition.x *= -1;
+            }
+            if (gridPosition.y < -h)
+            {
+                gridPosition.y = h;
+                gridPosition.x *= -1;
+            }
         }
-        if (gridPosition.x < -w)
-        {
-            gridPosition.x = w;
-        }
-        if (gridPosition.y > h)
-        {
-            gridPosition.y = -h;
-        }
-        if (gridPosition.y < -h)
-        {
-            gridPosition.y = h;
+        else {
+            // Me salgo por la derecha
+            if (gridPosition.x > w)
+            {
+                gridPosition.x = -w;
+            }
+            if (gridPosition.x < -w)
+            {
+                gridPosition.x = w;
+            }
+            if (gridPosition.y > h)
+            {
+                gridPosition.y = -h;
+            }
+            if (gridPosition.y < -h)
+            {
+                gridPosition.y = h;
+            }
         }
 
         return gridPosition;
